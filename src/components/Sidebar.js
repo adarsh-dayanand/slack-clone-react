@@ -14,10 +14,18 @@ import {
   InsertComment,
   PeopleAlt,
 } from "@material-ui/icons";
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { db } from '../firebaseConfig';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebaseConfig';
 
 import SidebarOptions from "./SidebarOptions";
 
 const Sidebar = () => {
+
+  const [channels] = useCollection(db.collection('rooms'));
+  const [user] = useAuthState(auth);
+
   return (
     <SidebarContainer>
       <SidebarHeader>
@@ -25,7 +33,7 @@ const Sidebar = () => {
           <h2>PROGRAMMER</h2>
           <h3>
             <FiberManualRecord />
-            Adarsh D
+            {user?.displayName}
           </h3>
         </SidebarInfo>
         <Create />
@@ -42,7 +50,10 @@ const Sidebar = () => {
       <hr />
       <SidebarOptions Icon={ExpandMore} title="Channels" />
       <hr />
-      <SidebarOptions Icon={Add} title="Add Channel" addChannelOption />
+      <SidebarOptions Icon={Add} title="Add Channel" addChannelOption={true} />
+
+      {channels?.docs.map((item) => (<SidebarOptions title={item.data().name} key={item.id} id={item.id} />))}
+
     </SidebarContainer>
   );
 };

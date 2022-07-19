@@ -1,34 +1,66 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Avatar } from '@material-ui/core';
-import { AccessTime, HelpOutline, Search } from '@material-ui/icons';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { Avatar } from "@material-ui/core";
+import { AccessTime, HelpOutline, Search } from "@material-ui/icons";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebaseConfig";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 const Header = () => {
+  const [user] = useAuthState(auth);
+  const [open, setOpen] = useState(false);
+
   return (
     <HeaderContainer>
       {/* Header Left */}
       <HeaderLeft>
-        <HeaderAvatar 
-          //TODO: ADD ONCLICK
-          onClick={() => {}}
+        <HeaderAvatar
+          alt={user?.displayName}
+          src={user?.photoURL}
+          onClick={() => setOpen(true)}
         />
+        {open && (
+          <Dialog
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{"Logout"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Do you really want to logout?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpen(false)}>Cancel</Button>
+              <Button
+                onClick={() => {
+                  auth.signOut();
+                  setOpen(true);
+                }}
+              >
+                Logout
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
         <AccessTime />
       </HeaderLeft>
-      
+
       {/* Header Search */}
       <HeaderSearch>
         <Search />
-        <input placeholder='Search here' />
+        <input placeholder="Search here" />
       </HeaderSearch>
 
       {/* Header Right */}
       <HeaderRight>
         <HelpOutline />
       </HeaderRight>
-    
     </HeaderContainer>
-  )
-}
+  );
+};
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -66,7 +98,7 @@ const HeaderSearch = styled.div`
   flex: 0.4;
   opacity: 1;
   border-radius: 6px;
-  background-color: #421F44;
+  background-color: #421f44;
   text-align: center;
   display: flex;
   padding: 0 50px;
