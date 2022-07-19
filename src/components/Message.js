@@ -37,6 +37,9 @@ const MessageContainer = styled.div`
 const MessageInfo = styled.div`
   padding-left: 10px;
 
+  > h4 {
+    text-transform: capitalize;
+  }
   > h4 > span {
     color: gray;
     font-style: 100;
